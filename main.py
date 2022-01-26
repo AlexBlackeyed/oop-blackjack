@@ -1,4 +1,4 @@
-import random,sys
+import random, sys
 card_values = {
     'A': 11,
     '2': 2,
@@ -16,15 +16,67 @@ card_values = {
 }
 card_colours = ["Diamonds", "Heart", "Spades", "Clubs"]
 
+
+class Card:
+    def __init__(self, value, suit):
+        self.value = value
+        self.suit = suit
+
+    def __repr__(self):
+        return f"{self.value} of {self.suit}"
+
+class Deck:
+
+    def __init__(self, shuffle=True):
+        self.cards = []
+        self.create_new_deck()
+        if shuffle:
+            self.shuffle()
+
+    def create_new_deck(self):
+        for suit in card_colours:
+            for value in card_values:
+                self.cards.append(Card(value, suit))
+
+    def shuffle(self):
+        random.shuffle(self.cards)
+
+    def deal_card(self):
+        if self.cards:
+            return self.cards.pop()
+        else:
+            return "Deck is empty"
+
+
+class Player():
+    def __init__(self):
+        self.all_cards  = []
+    def add_card_to_hand(self):
+        new_deck = Deck()
+        self.all_cards.append(new_deck.deal_card())
+        print(f"Your deck consists of {self.all_cards}")
+
+
+class COM():
+    def __init__(self):
+        self.c_all_cards  = []
+    def c_add_card_to_hand(self):
+        c_new_deck = Deck()
+        self.c_all_cards.append(c_new_deck.deal_card())
+        print(f"COM'S deck consists of {self.c_all_cards}")
+
+
 class BlackJack():
     def __init__(self):
         """Controls The Game"""
         self.score = 0
         self.c_score = 0
+        self.player_b = Player()
+        self.com_b = COM()
         while True:
             answer = input("Hit(H) or Stand(S): ")
             if answer == "H":
-                Player.add_card(self)
+                self.player_b.add_card_to_hand()
                 BlackJack.calc_score(self)
                 if self.score > 21:
                     print("You Lost")
@@ -41,7 +93,7 @@ class BlackJack():
                             print("COM Won")
                             BlackJack.again_input(self)
                         else:
-                            COM.add_card(self)
+                            self.com_b.c_add_card_to_hand()
                             BlackJack.c_calc_score(self)
                     elif self.c_score == 21:
                         print("COM Won")
@@ -56,43 +108,24 @@ class BlackJack():
         if self.again_input == "Y":
             self.score = 0
             self.c_score = 0
+            self.player_b.all_cards.clear()
+            self.com_b.c_all_cards.clear()
             BlackJack()
         else:
             sys.exit()
     
     def calc_score(self):
-        self.score += card_values[player_random_card]
-        print("Your Score: {}".format(self.score))
+        """Calculates Player's Score"""
+        self.score = 0
+        for i in self.player_b.all_cards:
+            self.score += card_values[i.value]
+        print(self.score)
     
     def c_calc_score(self):
-        self.c_score += card_values[com_random_card]
-        print("Croupier's Score: {}".format(self.c_score))
-
-
-class Player():  
-    def __init__(self):
-        pass
-    
-    def add_card(self):
-        global player_random_card
-        """Gets Random Card/Calculates its value and adds it to the total score"""
-        self.random_colour= random.choice(card_colours)
-        self.random_card = random.choice(list(card_values))
-        print("Your New Card is {} of {}".format(self.random_card,self.random_colour) + " and its value is {}".format(card_values[self.random_card]))
-        player_random_card = self.random_card
-
-
-class COM():
-    def __init__(self):
-        pass
-    
-    def add_card(self):
-        global com_random_card
-        """Gets Random Card/Calculates its value and adds it to the total score"""
-        self.c_random_colour = random.choice(card_colours)
-        self.c_random_card = random.choice(list(card_values))
-        print("Croupier's New Card is {} of {}".format(self.c_random_card,self.c_random_colour) + " and its value is {}".format(card_values[self.c_random_card]))
-        com_random_card = self.c_random_card
-        
+        """Calculates COM's Score"""
+        self.c_score = 0
+        for j in self.com_b.c_all_cards:
+            self.c_score += card_values[j.value]
+        print(self.c_score)
 
 BlackJack()
